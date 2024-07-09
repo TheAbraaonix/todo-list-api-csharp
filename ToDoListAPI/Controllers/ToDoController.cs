@@ -38,6 +38,8 @@ namespace ToDoListAPI.Controllers
             if (input == null) return BadRequest();
             
             _context.ToDoList.Add(input);
+            _context.SaveChanges();
+            
             return CreatedAtAction(nameof(Post), new ToDo { Id = input.Id }, input);
         }
 
@@ -49,6 +51,8 @@ namespace ToDoListAPI.Controllers
             if (toDo == null) return BadRequest();
 
             toDo.Update(input.Name, input.Description, input.Priority, input.IsCompleted);
+            _context.ToDoList.Update(toDo);
+            _context.SaveChanges();
 
             return NoContent();
         }
@@ -61,6 +65,7 @@ namespace ToDoListAPI.Controllers
             if (toDo == null) return BadRequest();
 
             toDo.Delete();
+            _context.SaveChanges();
 
             return NoContent();
         }
