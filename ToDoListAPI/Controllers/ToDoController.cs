@@ -18,14 +18,14 @@ namespace ToDoListAPI.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var ToDos = _context.ToDoList.Where(x => !x.IsDeleted).ToList();
-            return Ok(ToDos);
+            List<ToDo> toDos = _context.ToDoList.Where(x => !x.IsDeleted).ToList();
+            return Ok(toDos);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(Guid id)
         {
-            var toDo = _context.ToDoList.SingleOrDefault(x => x.Id == id);
+            ToDo? toDo = _context.ToDoList.SingleOrDefault(x => x.Id == id);
 
             if (toDo == null) return NotFound();
 
@@ -44,7 +44,7 @@ namespace ToDoListAPI.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(Guid id, ToDo input)
         {
-            var toDo = _context.ToDoList.SingleOrDefault(x => x.Id == id);
+            ToDo? toDo = _context.ToDoList.SingleOrDefault(x => x.Id == id);
 
             if (toDo == null) return BadRequest();
 
@@ -56,7 +56,7 @@ namespace ToDoListAPI.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
-            var toDo = _context.ToDoList.SingleOrDefault(x => x.Id == id);
+            ToDo? toDo = _context.ToDoList.SingleOrDefault(x => x.Id == id);
 
             if (toDo == null) return BadRequest();
 
