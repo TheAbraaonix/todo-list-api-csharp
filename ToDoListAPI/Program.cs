@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.Internal;
 using ToDoListAPI.Mappers;
 using ToDoListAPI.Persistence;
+using ToDoListAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +14,7 @@ builder.Services.AddDbContext<ToDoDbContext>(options =>
 });
 
 builder.Services.AddAutoMapper(typeof(ToDoProfile));
+builder.Services.AddScoped<ToDoService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

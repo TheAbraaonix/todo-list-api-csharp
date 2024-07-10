@@ -1,8 +1,8 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ToDoListAPI.Entities;
 using ToDoListAPI.Models;
 using ToDoListAPI.Persistence;
+using ToDoListAPI.Services;
 
 namespace ToDoListAPI.Controllers
 {
@@ -11,31 +11,26 @@ namespace ToDoListAPI.Controllers
     public class ToDoController : ControllerBase
     {
         private readonly ToDoDbContext _context;
-        private readonly IMapper _mapper;
+        private readonly ToDoService _service;
 
-        public ToDoController(ToDoDbContext context, IMapper mapper)
+        public ToDoController(ToDoDbContext context, ToDoService service)
         {
             _context = context;
-            _mapper = mapper;
+            _service = service;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<ToDo> toDos = _context.ToDoList.Where(x => !x.IsDeleted).ToList();
-            List<ToDoViewModel> toDosViewModel = _mapper.Map<List<ToDoViewModel>>(toDos);
-            
-            return Ok(toDosViewModel);
+            return Ok(_service.GetAll());
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(Guid id)
         {
-            ToDo? toDo = _context.ToDoList.SingleOrDefault(x => x.Id == id);
+            ToDoViewModel toDoViewModel = _service.GetById(id);
 
-            if (toDo == null) return NotFound();
-
-            ToDoViewModel toDoViewModel = _mapper.Map<ToDoViewModel>(toDo);
+            if (toDoViewModel == null) return NotFound();
             
             return Ok(toDoViewModel);
         }
@@ -43,25 +38,19 @@ namespace ToDoListAPI.Controllers
         [HttpPost]
         public IActionResult Post(ToDoInputModel input)
         {
-            if (input == null) return BadRequest();
+            ToDoViewModel toDoViewModel = _service.Create(input);
             
-            ToDo toDo = _mapper.Map<ToDo>(input);
-            _context.ToDoList.Add(toDo);
-            _context.SaveChanges();
+            if (toDoViewModel == null) return BadRequest();
             
-            return CreatedAtAction(nameof(Post), new ToDo { Id = toDo.Id }, toDo);
+            return CreatedAtAction(nameof(Post), new ToDo { Id = toDoViewModel.Id }, toDoViewModel);
         }
 
         [HttpPut("{id}")]
         public IActionResult Update(Guid id, ToDoInputModel input)
         {
-            ToDo? toDo = _context.ToDoList.SingleOrDefault(x => x.Id == id);
+            ToDoViewModel toDoViewModel = _service.Update(id, input);
 
-            if (toDo == null) return BadRequest();
-
-            toDo.Update(input.Name, input.Description, input.Priority, input.IsCompleted);
-            _context.ToDoList.Update(toDo);
-            _context.SaveChanges();
+            if (toDoViewModel == null) return BadRequest();
 
             return NoContent();
         }
@@ -69,13 +58,10 @@ namespace ToDoListAPI.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
-            ToDo? toDo = _context.ToDoList.SingleOrDefault(x => x.Id == id);
-
-            if (toDo == null) return BadRequest();
-
-            toDo.Delete();
-            _context.SaveChanges();
-
+            ToDoViewModel toDoViewModel = _service.Delete(id);
+            
+            if (toDoViewModel == null) return BadRequest();
+            
             return NoContent();
         }
     }
