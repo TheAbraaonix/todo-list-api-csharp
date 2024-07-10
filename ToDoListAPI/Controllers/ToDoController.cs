@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using ToDoListAPI.Entities;
+using ToDoListAPI.Models;
 using ToDoListAPI.Persistence;
 
 namespace ToDoListAPI.Controllers
@@ -9,17 +11,21 @@ namespace ToDoListAPI.Controllers
     public class ToDoController : ControllerBase
     {
         private readonly ToDoDbContext _context;
+        private readonly IMapper _mapper;
 
-        public ToDoController(ToDoDbContext context)
+        public ToDoController(ToDoDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
             List<ToDo> toDos = _context.ToDoList.Where(x => !x.IsDeleted).ToList();
-            return Ok(toDos);
+            List<ToDoViewModel> toDosViewModel = _mapper.Map<List<ToDoViewModel>>(toDos);
+            
+            return Ok(toDosViewModel);
         }
 
         [HttpGet("{id}")]
@@ -29,22 +35,25 @@ namespace ToDoListAPI.Controllers
 
             if (toDo == null) return NotFound();
 
-            return Ok(toDo);
+            ToDoViewModel toDoViewModel = _mapper.Map<ToDoViewModel>(toDo);
+            
+            return Ok(toDoViewModel);
         }
 
         [HttpPost]
-        public IActionResult Post(ToDo input)
+        public IActionResult Post(ToDoInputModel input)
         {
             if (input == null) return BadRequest();
             
-            _context.ToDoList.Add(input);
+            ToDo toDo = _mapper.Map<ToDo>(input);
+            _context.ToDoList.Add(toDo);
             _context.SaveChanges();
             
-            return CreatedAtAction(nameof(Post), new ToDo { Id = input.Id }, input);
+            return CreatedAtAction(nameof(Post), new ToDo { Id = toDo.Id }, toDo);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(Guid id, ToDo input)
+        public IActionResult Update(Guid id, ToDoInputModel input)
         {
             ToDo? toDo = _context.ToDoList.SingleOrDefault(x => x.Id == id);
 
