@@ -10,12 +10,10 @@ namespace ToDoListAPI.Controllers
     [Route("api/to-do")]
     public class ToDoController : ControllerBase
     {
-        private readonly ToDoDbContext _context;
-        private readonly ToDoService _service;
+        private readonly IToDoService _service;
 
-        public ToDoController(ToDoDbContext context, ToDoService service)
+        public ToDoController(IToDoService service)
         {
-            _context = context;
             _service = service;
         }
 

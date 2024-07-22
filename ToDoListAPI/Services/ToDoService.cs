@@ -1,30 +1,31 @@
 ﻿using AutoMapper;
 using ToDoListAPI.Entities;
 using ToDoListAPI.Models;
-using ToDoListAPI.Persistence;
+using ToDoListAPI.Repositories;
 
 namespace ToDoListAPI.Services
 {
     public class ToDoService : IToDoService
     {
-        private readonly ToDoDbContext _context;
+        private readonly IToDoRepository _repository;
         private readonly IMapper _mapper;
 
-        public ToDoService(ToDoDbContext context, IMapper mapper)
+        public ToDoService(IToDoRepository repository, IMapper mapper)
         {
-            _context = context;
+            _repository = repository;
             _mapper = mapper;
         }
 
         public IEnumerable<ToDoViewModel> GetAll()
         {
-            List<ToDoViewModel> toDos = _mapper.Map<List<ToDoViewModel>>(_context.ToDoList.Where(x => !x.IsDeleted));
-            return toDos;
+            IEnumerable<ToDo> toDos = _repository.GetAll();
+            IEnumerable<ToDoViewModel> toDosViewModel = _mapper.Map<IEnumerable<ToDoViewModel>>(toDos);
+            return toDosViewModel;
         }
 
         public ToDoViewModel GetById(Guid id)
         {
-            ToDo? toDo = _context.ToDoList.SingleOrDefault(x => x.Id == id);
+            ToDo? toDo = _repository.GetById(id);
 
             if (toDo == null) return null;
 
@@ -36,34 +37,32 @@ namespace ToDoListAPI.Services
             if (input == null) return null;
 
             ToDo toDo = _mapper.Map<ToDo>(input);
-            _context.Add(toDo);
-            _context.SaveChanges();
-
+            _repository.Create(toDo);
             return _mapper.Map<ToDoViewModel>(toDo);
         }
 
         public ToDoViewModel Update(Guid id, ToDoInputModel input)
         {
-            ToDo? toDo = _context.ToDoList.SingleOrDefault(x => x.Id == id);
+            ToDo? toDo = _repository.GetById(id);
 
             if (toDo == null) return null;
 
-            toDo.Update(input.Name, input.Description, input.Priority, input.IsCompleted);
-            _context.ToDoList.Update(toDo);
-            _context.SaveChanges();
+            toDo.Name = input.Name;
+            toDo.Description = input.Description;
+            toDo.Priority = input.Priority;
+            toDo.IsCompleted = input.IsCompleted;
 
+            _repository.Update(toDo);
             return _mapper.Map<ToDoViewModel>(toDo);
         }
 
         public ToDoViewModel Delete(Guid id)
         {
-            ToDo? toDo = _context.ToDoList.SingleOrDefault(x => x.Id == id);
+            ToDo? toDo = _repository.GetById(id);
 
             if (toDo == null) return null;
 
-            toDo.Delete();
-            _context.SaveChanges();
-
+            _repository.Delete(toDo);
             return _mapper.Map<ToDoViewModel>(toDo);
         }
     }
