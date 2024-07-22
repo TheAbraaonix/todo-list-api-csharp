@@ -5,7 +5,7 @@ using ToDoListAPI.Persistence;
 
 namespace ToDoListAPI.Services
 {
-    public class ToDoService
+    public class ToDoService : IToDoService
     {
         private readonly ToDoDbContext _context;
         private readonly IMapper _mapper;
@@ -16,7 +16,7 @@ namespace ToDoListAPI.Services
             _mapper = mapper;
         }
 
-        public List<ToDoViewModel> GetAll()
+        public IEnumerable<ToDoViewModel> GetAll()
         {
             List<ToDoViewModel> toDos = _mapper.Map<List<ToDoViewModel>>(_context.ToDoList.Where(x => !x.IsDeleted));
             return toDos;
