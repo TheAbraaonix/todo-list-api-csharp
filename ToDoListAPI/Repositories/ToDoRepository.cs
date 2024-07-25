@@ -1,4 +1,5 @@
-﻿using ToDoListAPI.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using ToDoListAPI.Entities;
 using ToDoListAPI.Persistence;
 
 namespace ToDoListAPI.Repositories
@@ -12,36 +13,36 @@ namespace ToDoListAPI.Repositories
             _context = context;
         }
 
-        public IEnumerable<ToDo> GetAll()
+        public async Task<IEnumerable<ToDo>> GetAllAsync()
         {
-            IEnumerable<ToDo> toDos = _context.ToDoList.ToList().Where(t => !t.IsDeleted);
+            IEnumerable<ToDo> toDos = await _context.ToDoList.Where(t => !t.IsDeleted).ToListAsync();
             return toDos;
         }
 
-        public ToDo GetById(Guid id)
+        public async Task<ToDo> GetByIdAsync(Guid id)
         {
-            ToDo? toDo = _context.ToDoList.Where(t => t.Id == id).SingleOrDefault();
+            ToDo? toDo = await _context.ToDoList.Where(t => t.Id == id).SingleOrDefaultAsync();
             return toDo;
         }
 
-        public ToDo Create(ToDo entity)
+        public async Task<ToDo> CreateAsync(ToDo entity)
         {
             _context.ToDoList.Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public ToDo Update(ToDo entity)
+        public async Task<ToDo> UpdateAsync(ToDo entity)
         {
             _context.Set<ToDo>().Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public ToDo Delete(ToDo entity)
+        public async Task<ToDo> DeleteAsync(ToDo entity)
         {
             entity.Delete();
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         } 
     }

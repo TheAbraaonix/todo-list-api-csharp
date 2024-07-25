@@ -16,34 +16,34 @@ namespace ToDoListAPI.Services
             _mapper = mapper;
         }
 
-        public IEnumerable<ToDoViewModel> GetAll()
+        public async Task<IEnumerable<ToDoViewModel>> GetAll()
         {
-            IEnumerable<ToDo> toDos = _repository.GetAll();
+            IEnumerable<ToDo> toDos = await _repository.GetAllAsync();
             IEnumerable<ToDoViewModel> toDosViewModel = _mapper.Map<IEnumerable<ToDoViewModel>>(toDos);
             return toDosViewModel;
         }
 
-        public ToDoViewModel GetById(Guid id)
+        public async Task<ToDoViewModel> GetById(Guid id)
         {
-            ToDo? toDo = _repository.GetById(id);
+            ToDo? toDo = await _repository.GetByIdAsync(id);
 
             if (toDo == null) return null;
 
             return _mapper.Map<ToDoViewModel>(toDo);
         }
 
-        public ToDoViewModel Create(ToDoInputModel input)
+        public async Task<ToDoViewModel> Create(ToDoInputModel input)
         {
             if (input == null) return null;
 
             ToDo toDo = _mapper.Map<ToDo>(input);
-            _repository.Create(toDo);
+            await _repository.CreateAsync(toDo);
             return _mapper.Map<ToDoViewModel>(toDo);
         }
 
-        public ToDoViewModel Update(Guid id, ToDoInputModel input)
+        public async Task<ToDoViewModel> Update(Guid id, ToDoInputModel input)
         {
-            ToDo? toDo = _repository.GetById(id);
+            ToDo? toDo = await _repository.GetByIdAsync(id);
 
             if (toDo == null) return null;
 
@@ -52,17 +52,17 @@ namespace ToDoListAPI.Services
             toDo.Priority = input.Priority;
             toDo.IsCompleted = input.IsCompleted;
 
-            _repository.Update(toDo);
+            await _repository.UpdateAsync(toDo);
             return _mapper.Map<ToDoViewModel>(toDo);
         }
 
-        public ToDoViewModel Delete(Guid id)
+        public async Task<ToDoViewModel> Delete(Guid id)
         {
-            ToDo? toDo = _repository.GetById(id);
+            ToDo? toDo = await _repository.GetByIdAsync(id);
 
             if (toDo == null) return null;
 
-            _repository.Delete(toDo);
+            await _repository.DeleteAsync(toDo);
             return _mapper.Map<ToDoViewModel>(toDo);
         }
     }

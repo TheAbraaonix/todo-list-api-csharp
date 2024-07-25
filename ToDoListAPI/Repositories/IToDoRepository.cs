@@ -4,10 +4,10 @@ namespace ToDoListAPI.Repositories
 {
     public interface IToDoRepository
     {
-        IEnumerable<ToDo> GetAll();
-        ToDo GetById(Guid id);
-        ToDo Create(ToDo entity);
-        ToDo Update(ToDo entity);
-        ToDo Delete(ToDo entity);
+        Task<IEnumerable<ToDo>> GetAllAsync();
+        Task<ToDo> GetByIdAsync(Guid id);
+        Task<ToDo> CreateAsync(ToDo entity);
+        Task<ToDo> UpdateAsync(ToDo entity);
+        Task<ToDo> DeleteAsync(ToDo entity);
     }
 }

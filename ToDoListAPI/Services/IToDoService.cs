@@ -4,10 +4,10 @@ namespace ToDoListAPI.Services
 {
     public interface IToDoService
     {
-        IEnumerable<ToDoViewModel> GetAll();
-        ToDoViewModel GetById(Guid id);
-        ToDoViewModel Create(ToDoInputModel model);
-        ToDoViewModel Update(Guid id, ToDoInputModel model);
-        ToDoViewModel Delete(Guid id);
+        Task<IEnumerable<ToDoViewModel>> GetAll();
+        Task<ToDoViewModel> GetById(Guid id);
+        Task<ToDoViewModel> Create(ToDoInputModel model);
+        Task<ToDoViewModel> Update(Guid id, ToDoInputModel model);
+        Task<ToDoViewModel> Delete(Guid id);
     }
 }

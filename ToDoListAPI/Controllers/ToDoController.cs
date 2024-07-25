@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ToDoListAPI.Entities;
 using ToDoListAPI.Models;
-using ToDoListAPI.Persistence;
 using ToDoListAPI.Services;
 
 namespace ToDoListAPI.Controllers
@@ -18,15 +17,15 @@ namespace ToDoListAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(_service.GetAll());
+            return Ok(await _service.GetAll());
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
-            ToDoViewModel toDoViewModel = _service.GetById(id);
+            ToDoViewModel toDoViewModel = await _service.GetById(id);
 
             if (toDoViewModel == null) return NotFound();
             
@@ -34,9 +33,9 @@ namespace ToDoListAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(ToDoInputModel input)
+        public async Task<IActionResult> Post(ToDoInputModel input)
         {
-            ToDoViewModel toDoViewModel = _service.Create(input);
+            ToDoViewModel toDoViewModel = await _service.Create(input);
             
             if (toDoViewModel == null) return BadRequest();
             
@@ -44,9 +43,9 @@ namespace ToDoListAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(Guid id, ToDoInputModel input)
+        public async Task<IActionResult> Update(Guid id, ToDoInputModel input)
         {
-            ToDoViewModel toDoViewModel = _service.Update(id, input);
+            ToDoViewModel toDoViewModel = await _service.Update(id, input);
 
             if (toDoViewModel == null) return BadRequest();
 
@@ -54,9 +53,9 @@ namespace ToDoListAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            ToDoViewModel toDoViewModel = _service.Delete(id);
+            ToDoViewModel toDoViewModel = await _service.Delete(id);
             
             if (toDoViewModel == null) return BadRequest();
             
