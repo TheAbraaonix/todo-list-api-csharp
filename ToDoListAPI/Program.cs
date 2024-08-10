@@ -14,6 +14,12 @@ builder.Services.AddDbContext<ToDoDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 
+builder.Services.AddCors(p => p.AddDefaultPolicy(x =>
+    x.AllowAnyHeader()
+    .AllowAnyMethod()
+    .WithOrigins(builder.Configuration.GetSection("AppSettings:OriginAllowed")?.Value)
+    .AllowCredentials()));
+
 builder.Services.AddAutoMapper(typeof(ToDoProfile));
 builder.Services.AddScoped<IToDoService, ToDoService>();
 builder.Services.AddScoped<IToDoRepository, ToDoRepository>();
@@ -31,6 +37,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(x => x.AllowAnyHeader()
+    .AllowAnyMethod()
+    .WithOrigins(builder.Configuration.GetSection("AppSettings:OriginAllowed")?.Value)
+    .AllowCredentials());
 
 app.UseHttpsRedirection();
 

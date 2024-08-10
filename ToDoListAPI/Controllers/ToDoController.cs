@@ -17,12 +17,14 @@ namespace ToDoListAPI.Controllers
         }
 
         [HttpGet]
+        [Route("GetAllToDo")]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _service.GetAll());
         }
 
-        [HttpGet("{id}")]
+        [HttpGet()]
+        [Route("GetToDoById/{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
             ToDoViewModel toDoViewModel = await _service.GetById(id);
@@ -33,16 +35,18 @@ namespace ToDoListAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(ToDoInputModel input)
+        [Route("CreateToDo")]
+        public async Task<IActionResult> CreateToDo(ToDoInputModel toDo)
         {
-            ToDoViewModel toDoViewModel = await _service.Create(input);
-            
+            ToDoViewModel toDoViewModel = await _service.Create(toDo);
+
             if (toDoViewModel == null) return BadRequest();
-            
-            return CreatedAtAction(nameof(Post), new ToDo { Id = toDoViewModel.Id }, toDoViewModel);
+
+            return CreatedAtAction(nameof(CreateToDo), new ToDo { Id = toDoViewModel.Id }, toDoViewModel);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut()]
+        [Route("UpdateToDo/{id}")]
         public async Task<IActionResult> Update(Guid id, ToDoInputModel input)
         {
             ToDoViewModel toDoViewModel = await _service.Update(id, input);
@@ -52,7 +56,8 @@ namespace ToDoListAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete()]
+        [Route("DeleteToDo/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             ToDoViewModel toDoViewModel = await _service.Delete(id);
