@@ -53,7 +53,7 @@ namespace ToDoListAPI.Controllers
 
             if (toDoViewModel == null) return BadRequest();
 
-            return NoContent();
+            return Ok(toDoViewModel);
         }
 
         [HttpDelete()]
